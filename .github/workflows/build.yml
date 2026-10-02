@@ -88,11 +88,13 @@ jobs:
       - name: Collect packages
         run: |
           mkdir -p artifacts
+          # Only the packages themselves: `make package/<name>/compile` does
+          # not generate Packages / APKINDEX, so globbing for those would be
+          # dead code. They appear only after `make package/index` or a full
+          # image build.
           find sdk/bin/ -type f \( \
               -name "${PACKAGE_NAME}*.${{ matrix.pkg_ext }}" -o \
-              -name "${I18N_PACKAGE_NAME}*.${{ matrix.pkg_ext }}" -o \
-              -name 'Packages' -o -name 'Packages.gz' -o \
-              -name 'APKINDEX.tar.gz' -o -name 'packages.adb' \
+              -name "${I18N_PACKAGE_NAME}*.${{ matrix.pkg_ext }}" \
             \) -exec cp {} artifacts/ \;
           ls -lh artifacts/ || echo "(no ${{ matrix.pkg_ext }} packages)"
 
