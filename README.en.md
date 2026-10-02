@@ -6,7 +6,8 @@ A small LuCI application for OpenWrt / ImmortalWrt that switches **all** system
 LEDs on or off with a single toggle, and keeps that choice across reboots.
 
 * LuCI 2 (client side JavaScript) - no legacy Lua CBI views.
-* English and Simplified Chinese (`zh_Hans`) translations.
+* English and Simplified Chinese (`zh_Hans`) built in - **no** separate
+  `luci-i18n-*` package to install.
 * Supports both package formats: `.ipk` (opkg, OpenWrt 24.10) and `.apk`
   (apk-openssl, OpenWrt 25.12+).
 
@@ -40,23 +41,23 @@ with `1` written instead of `0` when LEDs are enabled.
 Download the matching package from the [Releases](../../releases) page, copy it
 to the router and install it.
 
-Every push to `main` refreshes the rolling [`latest`](../../releases/tag/latest)
-pre-release, so that page always holds the newest build. Tagged versions such as
-`v1.0.0` are published as normal releases. Packages are built for OpenWrt 24.10
-(`.ipk`) and 25.12+ (`.apk`).
+Packages are built for OpenWrt 24.10 (`.ipk`) and 25.12+ (`.apk`). The release
+tag and name are read straight from `PKG_VERSION`/`PKG_RELEASE` in the Makefile
+(`1.0.0-r1`, say), so the version you download always matches the tag.
+
+**Simplified Chinese and English are both inside this one package** - there is
+no language package to install.
 
 OpenWrt 24.10 and older (opkg):
 
 ```sh
 opkg install luci-app-ledset_*.ipk
-opkg install luci-i18n-ledset-zh-cn_*.ipk
 ```
 
 OpenWrt 25.12 and newer (apk):
 
 ```sh
 apk add --allow-untrusted luci-app-ledset-*.apk
-apk add --allow-untrusted luci-i18n-ledset-zh-cn-*.apk
 ```
 
 Then open **System → LED Control** in LuCI.
@@ -89,12 +90,13 @@ The resulting packages appear below `bin/packages/<arch>/luci/`.
 
 `.github/workflows/build.yml` builds the package against the official SDKs of
 OpenWrt **24.10.8** (`.ipk`) and **25.12.5** (`.apk`) in a matrix and uploads
-the application package, the translation package and the package index files as
-artifacts. It runs on every push, pull request and manual dispatch.
+the built packages as artifacts. It runs on every push, pull request and manual
+dispatch.
 
-On a push it also publishes the packages to the Releases page: a `v*` tag
-creates a versioned release, any branch push refreshes the rolling `latest`
-pre-release. Pull requests build only - they never publish.
+On a push it also publishes the packages to the Releases page, taking both the
+tag and the release name from `PKG_VERSION`/`PKG_RELEASE` in the Makefile. The
+version therefore has a single source of truth and cannot drift from the tag.
+Pull requests build only - they never publish.
 
 ## Repository layout
 
@@ -105,7 +107,7 @@ luci-app-ledset/
 ├── htdocs/luci-static/resources/view/ledset.js
 ├── po/
 │   ├── templates/ledset.pot
-│   └── zh_Hans/ledset.po
+│   └── zh-cn/ledset.po
 ├── root/
 │   ├── etc/
 │   │   ├── config/ledset
@@ -116,6 +118,13 @@ luci-app-ledset/
 │       └── rpcd/acl.d/luci-app-ledset.json
 └── .github/workflows/build.yml
 ```
+
+The `zh-cn` directory name under `po/` is deliberate. luci.mk generates a
+`luci-i18n-*` package per directory below `po/`, but only for names that appear
+in its built-in language table. `zh_Hans` is in that table, so a `po/zh_Hans`
+directory would add a `luci-i18n-ledset-zh-cn` package; `zh-cn` - the name LuCI
+itself uses for the compiled `.lmo` - is not, so no language package is
+generated and the translation is compiled into the main package instead.
 
 The `menu.d` and `acl.d` files are what actually make the page reachable: the
 first registers the *System → LED Control* entry, the second grants the view

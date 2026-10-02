@@ -6,7 +6,8 @@
 **所有**系统 LED 指示灯，并且该设置会在重启后自动恢复。
 
 * 基于 LuCI 2（客户端 JavaScript），不含传统的 Lua CBI 视图。
-* 提供英文与简体中文（`zh_Hans`）翻译。
+* 内置英文与简体中文（`zh_Hans`）界面，**无需**再单独安装 `luci-i18n-*`
+  语言包。
 * 同时支持两种软件包格式：`.ipk`（opkg，OpenWrt 24.10）与 `.apk`
   （apk-openssl，OpenWrt 25.12+）。
 
@@ -38,22 +39,22 @@ for i in /sys/class/leds/*; do [ -e "$i/brightness" ] && echo 0 > "$i/brightness
 
 从 [Releases](../../releases) 页面下载对应的软件包，复制到路由器上并安装。
 
-每次推送到 `main` 都会刷新滚动的 [`latest`](../../releases/tag/latest)
-预发布版本，因此该页面始终是最新的构建结果。带 tag 的版本（如 `v1.0.0`）则以
-正式版本发布。软件包针对 OpenWrt 24.10（`.ipk`）与 25.12+（`.apk`）构建。
+软件包针对 OpenWrt 24.10（`.ipk`）与 25.12+（`.apk`）构建。Release 的 tag 与
+名称直接取自 Makefile 中的 `PKG_VERSION`/`PKG_RELEASE`（例如 `1.0.0-r1`），
+所以下载到的版本号一定与 tag 一致。
+
+**简体中文与英文界面都已包含在这一个包里**，不需要再安装任何语言包。
 
 OpenWrt 24.10 及更早版本（opkg）：
 
 ```sh
 opkg install luci-app-ledset_*.ipk
-opkg install luci-i18n-ledset-zh-cn_*.ipk
 ```
 
 OpenWrt 25.12 及更新版本（apk）：
 
 ```sh
 apk add --allow-untrusted luci-app-ledset-*.apk
-apk add --allow-untrusted luci-i18n-ledset-zh-cn-*.apk
 ```
 
 然后打开 LuCI 中的 **系统 → LED 指示灯控制**。
@@ -85,12 +86,12 @@ make package/luci-app-ledset/compile V=s
 ### 使用 GitHub Actions
 
 `.github/workflows/build.yml` 会以矩阵方式，针对 OpenWrt **24.10.8**
-（`.ipk`）与 **25.12.5**（`.apk`）的官方 SDK 构建本软件包，并将应用包、翻译包
-以及软件包索引文件作为构建产物上传。每次 push、pull request 以及手动触发时都会
-运行。
+（`.ipk`）与 **25.12.5**（`.apk`）的官方 SDK 构建本软件包，并把编译出的安装包
+作为构建产物上传。每次 push、pull request 以及手动触发时都会运行。
 
-推送时还会把软件包发布到 Releases 页面：`v*` tag 会创建正式版本，任何分支推送
-都会刷新滚动的 `latest` 预发布版本。pull request 只构建，不会发布。
+推送时还会把软件包发布到 Releases 页面，tag 与名称都直接读取 Makefile 里的
+`PKG_VERSION`/`PKG_RELEASE`，因此版本号只有一个来源，软件包与 tag 不会出现
+不一致。pull request 只构建，不会发布。
 
 ## 仓库结构
 
@@ -101,7 +102,7 @@ luci-app-ledset/
 ├── htdocs/luci-static/resources/view/ledset.js
 ├── po/
 │   ├── templates/ledset.pot
-│   └── zh_Hans/ledset.po
+│   └── zh-cn/ledset.po
 ├── root/
 │   ├── etc/
 │   │   ├── config/ledset
@@ -116,6 +117,12 @@ luci-app-ledset/
 真正让页面可以被访问到的是 `menu.d` 与 `acl.d` 这两个文件：前者注册了
 *系统 → LED 指示灯控制* 菜单项，后者授予该视图读写 `ledset` UCI 配置以及调用
 `rc init` 的权限。
+
+`po/` 下的目录名 `zh-cn` 是刻意取的。luci.mk 会按照 `po/` 下的目录名自动生成
+`luci-i18n-*` 语言包，但只对出现在它内置语言表里的名字生效：`zh_Hans` 在表里，
+所以目录若叫 `po/zh_Hans` 就会多出一个 `luci-i18n-ledset-zh-cn` 包；改叫
+`zh-cn`（LuCI 自己给编译产物 `.lmo` 用的名字）就不在表里，于是不会生成语言包，
+翻译得以直接编译进主包。
 
 ## 许可证
 
