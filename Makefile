@@ -12,13 +12,13 @@ PKG_RELEASE:=1
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
-PKG_MAINTAINER:=Arthur97172 <arthur97172@outlook.com>
+PKG_MAINTAINER:=Arthur97172 <Arthur97172@users.noreply.github.com>
 
 LUCI_TITLE:=LuCI app to switch all system LEDs on or off
 LUCI_DEPENDS:=+luci-base
 LUCI_PKGARCH:=all
 LUCI_URL:=https://github.com/Arthur97172/luci-app-ledset
-LUCI_MAINTAINER:=Arthur97172 <arthur97172@outlook.com>
+LUCI_MAINTAINER:=Arthur97172 <Arthur97172@users.noreply.github.com>
 
 include $(TOPDIR)/feeds/luci/luci.mk
 
