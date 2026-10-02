@@ -30,8 +30,8 @@ msgid "Enable LEDs"
 msgstr "启用 LED 指示灯"
 
 #: htdocs/luci-static/resources/view/ledset.js:37
-msgid "When disabled, the brightness of every LED below /sys/class/leds is written to 0. The setting takes effect immediately and is restored automatically after a reboot."
-msgstr "关闭后，/sys/class/leds 下所有 LED 的 brightness 都会被写入 0。该设置立即生效，并在路由器重启后自动恢复。"
+msgid "Controls the status of LEDs. Settings take effect immediately and will persist after a reboot (ON or OFF)."
+msgstr "控制 LED 的状态。设置立即生效，且在路由器重启后依然会自动保持您选择的状态（开启或关闭）。"
 
 #: htdocs/luci-static/resources/view/ledset.js:54
 msgid "LED settings have been applied."

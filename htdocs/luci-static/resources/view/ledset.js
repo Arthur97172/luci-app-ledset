@@ -34,7 +34,7 @@ return view.extend({
 		s.addremove = false;
 
 		o = s.option(form.Flag, 'enable', _('Enable LEDs'),
-			_('When disabled, the brightness of every LED below /sys/class/leds is written to 0. The setting takes effect immediately and is restored automatically after a reboot.'));
+			_('Controls the status of LEDs. Settings take effect immediately and will persist after a reboot (ON or OFF).'));
 		o.default = '1';
 		o.rmempty = false;
 

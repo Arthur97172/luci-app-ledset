@@ -18,7 +18,7 @@ msgid "Enable LEDs"
 msgstr ""
 
 #: htdocs/luci-static/resources/view/ledset.js:37
-msgid "When disabled, the brightness of every LED below /sys/class/leds is written to 0. The setting takes effect immediately and is restored automatically after a reboot."
+msgid "Controls the status of LEDs. Settings take effect immediately and will persist after a reboot (ON or OFF)."
 msgstr ""
 
 #: htdocs/luci-static/resources/view/ledset.js:54
