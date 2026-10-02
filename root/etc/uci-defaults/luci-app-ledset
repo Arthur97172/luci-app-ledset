@@ -1,0 +1,21 @@
+#!/bin/sh
+#
+# Copyright (C) 2026 Arthur97172 <arthur97172@outlook.com>
+# SPDX-License-Identifier: MIT
+#
+# uci-defaults script - executed exactly once, on the first boot after the
+# package has been installed. It makes sure the UCI configuration exists and
+# that the init script is executable. Exiting with 0 makes the OpenWrt build
+# system delete this script again, so it never runs twice.
+
+[ -f /etc/config/ledset ] || touch /etc/config/ledset
+
+if ! uci -q get ledset.global >/dev/null 2>&1; then
+	uci -q set ledset.global=ledset
+	uci -q set ledset.global.enable='1'
+	uci -q commit ledset
+fi
+
+chmod 0755 /etc/init.d/ledset 2>/dev/null
+
+exit 0

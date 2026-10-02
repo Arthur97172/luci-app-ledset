@@ -1,0 +1,42 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: luci-app-ledset 1.0.0\n"
+"Report-Msgid-Bugs-To: https://github.com/Arthur97172/luci-app-ledset/issues\n"
+"POT-Creation-Date: 2026-10-02 00:00+0000\n"
+"PO-Revision-Date: 2026-10-02 00:00+0000\n"
+"Last-Translator: Arthur97172 <arthur97172@outlook.com>\n"
+"Language-Team: Chinese (Simplified Han script)\n"
+"Language: zh_Hans\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: htdocs/luci-static/resources/view/ledset.js:29
+#: root/usr/share/luci/menu.d/luci-app-ledset.json
+msgid "LED Control"
+msgstr "LED 指示灯控制"
+
+#: htdocs/luci-static/resources/view/ledset.js:30
+msgid "Turn all system LEDs on or off with a single switch."
+msgstr "通过一个开关即可打开或关闭系统上所有的 LED 指示灯。"
+
+#: htdocs/luci-static/resources/view/ledset.js:32
+msgid "Global Settings"
+msgstr "全局设置"
+
+#: htdocs/luci-static/resources/view/ledset.js:36
+msgid "Enable LEDs"
+msgstr "启用 LED 指示灯"
+
+#: htdocs/luci-static/resources/view/ledset.js:37
+msgid "When disabled, the brightness of every LED below /sys/class/leds is written to 0. The setting takes effect immediately and is restored automatically after a reboot."
+msgstr "关闭后，/sys/class/leds 下所有 LED 的 brightness 都会被写入 0。该设置立即生效，并在路由器重启后自动恢复。"
+
+#: htdocs/luci-static/resources/view/ledset.js:54
+msgid "LED settings have been applied."
+msgstr "LED 设置已应用。"
+
+#: htdocs/luci-static/resources/view/ledset.js:60
+msgid "Failed to apply the LED settings: %s"
+msgstr "应用 LED 设置失败：%s"

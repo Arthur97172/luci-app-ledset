@@ -1,0 +1,13 @@
+{
+	"admin/system/ledset": {
+		"title": "LED Control",
+		"order": 61,
+		"action": {
+			"type": "view",
+			"path": "ledset"
+		},
+		"depends": {
+			"acl": [ "luci-app-ledset" ]
+		}
+	}
+}

@@ -1,0 +1,30 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: htdocs/luci-static/resources/view/ledset.js:29
+msgid "LED Control"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/ledset.js:30
+msgid "Turn all system LEDs on or off with a single switch."
+msgstr ""
+
+#: htdocs/luci-static/resources/view/ledset.js:32
+msgid "Global Settings"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/ledset.js:36
+msgid "Enable LEDs"
+msgstr ""
+
+#: htdocs/luci-static/resources/view/ledset.js:37
+msgid "When disabled, the brightness of every LED below /sys/class/leds is written to 0. The setting takes effect immediately and is restored automatically after a reboot."
+msgstr ""
+
+#: htdocs/luci-static/resources/view/ledset.js:54
+msgid "LED settings have been applied."
+msgstr ""
+
+#: htdocs/luci-static/resources/view/ledset.js:60
+msgid "Failed to apply the LED settings: %s"
+msgstr ""

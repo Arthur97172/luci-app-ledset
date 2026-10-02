@@ -1,0 +1,154 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    tags:
+      - 'v*'
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PACKAGE_NAME: luci-app-ledset
+  I18N_PACKAGE_NAME: luci-i18n-ledset-zh-cn
+
+jobs:
+  build:
+    name: ${{ matrix.sdk.version }} / ${{ matrix.sdk.target }} / ${{ matrix.sdk.format }}
+    runs-on: ubuntu-22.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        sdk:
+          # OpenWrt 24.10 - classic opkg based release, produces .ipk packages.
+          - version: '24.10.8'
+            target: 'x86/64'
+            format: 'ipk'
+          # OpenWrt 25.12 - apk based release, produces .apk packages.
+          - version: '25.12.5'
+            target: 'x86/64'
+            format: 'apk'
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          path: package-src
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential ccache ecj fastjar file g++ gawk gettext \
+            git java-propose-classpath libelf-dev libncurses5-dev \
+            libncursesw5-dev libssl-dev python3 python3-dev \
+            python3-distutils python3-setuptools rsync subversion swig \
+            time unzip wget xsltproc zlib1g-dev zstd
+
+      - name: Download OpenWrt SDK ${{ matrix.sdk.version }}
+        run: |
+          set -euo pipefail
+
+          BASE_URL="https://downloads.openwrt.org/releases/${{ matrix.sdk.version }}/targets/${{ matrix.sdk.target }}/"
+          SDK_FILE="$(curl -fsSL "$BASE_URL" | grep -oE 'openwrt-sdk-[^"<>]*Linux-x86_64\.tar\.(zst|xz)' | head -n1)"
+
+          if [ -z "$SDK_FILE" ]; then
+            echo "::error::Could not locate an SDK tarball below $BASE_URL"
+            exit 1
+          fi
+
+          echo "Downloading $SDK_FILE"
+          curl -fL --retry 3 --retry-delay 5 -o "/tmp/$SDK_FILE" "$BASE_URL$SDK_FILE"
+
+          mkdir -p "$GITHUB_WORKSPACE/sdk"
+          case "$SDK_FILE" in
+            *.zst) tar -I zstd -xf "/tmp/$SDK_FILE" -C "$GITHUB_WORKSPACE/sdk" --strip-components=1 ;;
+            *)     tar -xf        "/tmp/$SDK_FILE" -C "$GITHUB_WORKSPACE/sdk" --strip-components=1 ;;
+          esac
+
+          rm -f "/tmp/$SDK_FILE"
+
+      - name: Add package to the SDK
+        run: |
+          set -euo pipefail
+          mkdir -p "sdk/package/${PACKAGE_NAME}"
+          rsync -a --delete \
+            --exclude '.git' \
+            --exclude '.github' \
+            package-src/ "sdk/package/${PACKAGE_NAME}/"
+          echo "===== package tree ====="
+          find "sdk/package/${PACKAGE_NAME}" -type f | sort
+
+      - name: Update and install feeds
+        working-directory: sdk
+        run: |
+          set -euo pipefail
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+
+      - name: Configure
+        working-directory: sdk
+        run: |
+          set -euo pipefail
+          {
+            echo "CONFIG_PACKAGE_${PACKAGE_NAME}=m"
+            echo "CONFIG_PACKAGE_${I18N_PACKAGE_NAME}=m"
+          } >> .config
+          make defconfig
+
+      - name: Compile package
+        working-directory: sdk
+        run: |
+          set -euo pipefail
+          make "package/${PACKAGE_NAME}/compile" -j"$(nproc)" 2>&1 | tee build.log
+
+      - name: Show build log on failure
+        if: failure()
+        working-directory: sdk
+        run: |
+          echo "===== build.log (tail) ====="
+          tail -n 200 build.log 2>/dev/null || true
+          echo "===== SDK error dumps ====="
+          find logs -name '*.txt' -exec sh -c 'echo "--- $1 ---"; tail -n 80 "$1"' _ {} \; 2>/dev/null || true
+
+      - name: Collect packages
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+
+          # Main application package plus the generated translation package.
+          find sdk/bin -type f \( \
+              -name "${PACKAGE_NAME}*.ipk" -o -name "${PACKAGE_NAME}*.apk" -o \
+              -name "luci-i18n-ledset*.ipk" -o -name "luci-i18n-ledset*.apk" \
+            \) -exec cp -v {} artifacts/ \;
+
+          # Package index files (opkg "Packages*" resp. apk "APKINDEX*").
+          find sdk/bin -type f \( \
+              -name 'Packages' -o -name 'Packages.gz' -o -name 'Packages.manifest' -o \
+              -name 'APKINDEX.tar.gz' -o -name 'packages.adb' \
+            \) -exec cp -v {} artifacts/ \;
+
+          echo "===== collected ====="
+          ls -la artifacts
+
+      - name: Create combined archive
+        run: |
+          set -euo pipefail
+          tar -czf "${PACKAGE_NAME}-${{ matrix.sdk.version }}-${{ matrix.sdk.format }}.tar.gz" -C artifacts .
+          ls -la ./*.tar.gz
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.PACKAGE_NAME }}-${{ matrix.sdk.version }}-${{ matrix.sdk.format }}
+          path: |
+            artifacts/*
+            ${{ env.PACKAGE_NAME }}-${{ matrix.sdk.version }}-${{ matrix.sdk.format }}.tar.gz
+          if-no-files-found: error
+          retention-days: 30

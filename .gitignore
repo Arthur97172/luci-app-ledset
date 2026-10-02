@@ -1,0 +1,16 @@
+# Local project documentation - must never be published to GitHub.
+/CLAUDE.md
+/DESIGN_SPEC.md
+
+# Build artifacts
+*.ipk
+*.apk
+*.lmo
+*.tar.gz
+build.log
+/artifacts/
+/sdk/
+
+# Editor / OS noise
+*~
+.DS_Store
