@@ -36,7 +36,11 @@ for i in /sys/class/leds/*; do [ -e "$i/brightness" ] && echo 0 > "$i/brightness
 
 ## 安装
 
-从最新的 GitHub Actions 构建产物中下载对应的文件，复制到路由器上并安装。
+从 [Releases](../../releases) 页面下载对应的软件包，复制到路由器上并安装。
+
+每次推送到 `main` 都会刷新滚动的 [`latest`](../../releases/tag/latest)
+预发布版本，因此该页面始终是最新的构建结果。带 tag 的版本（如 `v1.0.0`）则以
+正式版本发布。软件包针对 OpenWrt 24.10（`.ipk`）与 25.12+（`.apk`）构建。
 
 OpenWrt 24.10 及更早版本（opkg）：
 
@@ -84,6 +88,9 @@ make package/luci-app-ledset/compile V=s
 （`.ipk`）与 **25.12.5**（`.apk`）的官方 SDK 构建本软件包，并将应用包、翻译包
 以及软件包索引文件作为构建产物上传。每次 push、pull request 以及手动触发时都会
 运行。
+
+推送时还会把软件包发布到 Releases 页面：`v*` tag 会创建正式版本，任何分支推送
+都会刷新滚动的 `latest` 预发布版本。pull request 只构建，不会发布。
 
 ## 仓库结构
 

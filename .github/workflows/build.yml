@@ -152,3 +152,79 @@ jobs:
             ${{ env.PACKAGE_NAME }}-${{ matrix.sdk.version }}-${{ matrix.sdk.format }}.tar.gz
           if-no-files-found: error
           retention-days: 30
+
+  # Publish the compiled packages to the GitHub Releases page.
+  #
+  # The build job above only uses actions/upload-artifact, which stores files
+  # under the workflow run ("Artifacts" section). Those need a GitHub login to
+  # download and expire after retention-days. Release assets are permanent and
+  # fetchable with a plain wget/curl, which is what you want when installing on
+  # a router.
+  #
+  # Two shapes, chosen by what triggered the run:
+  #   * a v* tag  -> a normal versioned release, e.g. v1.0.0
+  #   * a branch  -> the rolling "latest" pre-release, replaced on every push
+  release:
+    name: Publish release
+    needs: build
+    if: github.event_name == 'push'
+    runs-on: ubuntu-22.04
+
+    # The workflow level default is contents: read. Creating a release writes to
+    # the repository, so this job needs its own elevated grant. It is scoped to
+    # this job on purpose - the build job has no reason to hold write access.
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download built packages
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+
+      - name: Show collected files
+        run: find dist -type f | sort
+
+      # The rolling release is rebuilt from scratch on every push so that its
+      # "latest" tag actually points at the commit that produced the assets.
+      # Updating a release in place would leave the tag on whichever commit
+      # created it first.
+      - name: Remove previous rolling release
+        if: github.ref_type == 'branch'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release delete latest --yes --cleanup-tag --repo "$GITHUB_REPOSITORY" || true
+
+      - name: Publish versioned release
+        if: github.ref_type == 'tag'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          generate_release_notes: true
+          fail_on_unmatched_files: false
+          files: |
+            dist/**/*.ipk
+            dist/**/*.apk
+            dist/**/Packages
+            dist/**/Packages.gz
+            dist/**/APKINDEX.tar.gz
+            dist/**/packages.adb
+
+      - name: Publish rolling pre-release
+        if: github.ref_type == 'branch'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: Latest build (main)
+          target_commitish: ${{ github.sha }}
+          prerelease: true
+          generate_release_notes: true
+          fail_on_unmatched_files: false
+          files: |
+            dist/**/*.ipk
+            dist/**/*.apk
+            dist/**/Packages
+            dist/**/Packages.gz
+            dist/**/APKINDEX.tar.gz
+            dist/**/packages.adb

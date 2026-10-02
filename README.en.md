@@ -37,8 +37,13 @@ with `1` written instead of `0` when LEDs are enabled.
 
 ## Installation
 
-Grab the matching artifact from the latest GitHub Actions run, copy it to the
-router and install it.
+Download the matching package from the [Releases](../../releases) page, copy it
+to the router and install it.
+
+Every push to `main` refreshes the rolling [`latest`](../../releases/tag/latest)
+pre-release, so that page always holds the newest build. Tagged versions such as
+`v1.0.0` are published as normal releases. Packages are built for OpenWrt 24.10
+(`.ipk`) and 25.12+ (`.apk`).
 
 OpenWrt 24.10 and older (opkg):
 
@@ -86,6 +91,10 @@ The resulting packages appear below `bin/packages/<arch>/luci/`.
 OpenWrt **24.10.8** (`.ipk`) and **25.12.5** (`.apk`) in a matrix and uploads
 the application package, the translation package and the package index files as
 artifacts. It runs on every push, pull request and manual dispatch.
+
+On a push it also publishes the packages to the Releases page: a `v*` tag
+creates a versioned release, any branch push refreshes the rolling `latest`
+pre-release. Pull requests build only - they never publish.
 
 ## Repository layout
 
