@@ -1,16 +1,17 @@
 #
 # Copyright (C) 2026 Arthur97172 <arthur97172@outlook.com>
 #
-# This is free software, licensed under the MIT License.
+# This is free software, licensed under the GNU General Public License v3.0
+# (SPDX: GPL-3.0-only).
 #
 
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-app-ledset
-PKG_VERSION:=1.0.0
+PKG_VERSION:=1.0.1
 PKG_RELEASE:=1
 
-PKG_LICENSE:=MIT
+PKG_LICENSE:=GPL-3.0-only
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=Arthur97172 <Arthur97172@users.noreply.github.com>
 

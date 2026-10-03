@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # Copyright (C) 2026 Arthur97172 <arthur97172@outlook.com>
-# SPDX-License-Identifier: MIT
+# SPDX-License-Identifier: GPL-3.0-only
 #
 # uci-defaults script - executed exactly once, on the first boot after the
 # package has been installed. It makes sure the UCI configuration exists, that

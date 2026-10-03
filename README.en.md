@@ -43,7 +43,7 @@ to the router and install it.
 
 Packages are built for OpenWrt 24.10 (`.ipk`) and 25.12+ (`.apk`). The release
 tag and name are read straight from `PKG_VERSION`/`PKG_RELEASE` in the Makefile
-(`1.0.0-r1`, say), so the version you download always matches the tag.
+(`1.0.1-r1`, say), so the version you download always matches the tag.
 
 **Simplified Chinese and English are both inside this one package** - there is
 no language package to install.
@@ -133,4 +133,4 @@ read/write access to the `ledset` UCI config and permission to call
 
 ## License
 
-MIT - see [LICENSE](LICENSE).
+GNU General Public License v3.0 (GPL-3.0-only) - see [LICENSE](LICENSE).

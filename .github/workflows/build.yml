@@ -120,8 +120,8 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
 
-      # PKG_VERSION:=1.0.0 together with PKG_RELEASE:=1 becomes the tag
-      # "1.0.0-r1". Bumping either in the Makefile produces a new tag on the
+      # PKG_VERSION:=1.0.1 together with PKG_RELEASE:=1 becomes the tag
+      # "1.0.1-r1". Bumping either in the Makefile produces a new tag on the
       # next push, so the version is edited in exactly one place.
       - name: Read version from Makefile
         id: version
