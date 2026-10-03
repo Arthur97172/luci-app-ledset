@@ -51,11 +51,14 @@ return view.extend({
 		}).then(function() {
 			return callRcInit('ledset', 'restart');
 		}).then(function() {
-			ui.addNotification(null, E('p', _('LED settings have been applied.')), 'info');
-
-			window.setTimeout(function() {
-				window.location.reload();
-			}, 1000);
+			/*
+			 * Reload so the form shows the committed state. Deliberately no
+			 * success notification: the reload replaces the page a moment
+			 * later, so a toast would only flash past. The error branch below
+			 * keeps its notification, because on failure nothing reloads and
+			 * the user would otherwise see no sign that anything went wrong.
+			 */
+			window.location.reload();
 		}).catch(function(err) {
 			ui.addNotification(null, E('p', _('Failed to apply the LED settings: %s').format(err)), 'error');
 		});

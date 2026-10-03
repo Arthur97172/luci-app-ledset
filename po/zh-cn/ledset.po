@@ -33,10 +33,6 @@ msgstr "启用 LED 指示灯"
 msgid "Controls the status of LEDs. Settings take effect immediately and will persist after a reboot (ON or OFF)."
 msgstr "控制 LED 的状态。设置立即生效，且在路由器重启后依然会自动保持您选择的状态（开启或关闭）。"
 
-#: htdocs/luci-static/resources/view/ledset.js:54
-msgid "LED settings have been applied."
-msgstr "LED 设置已应用。"
-
-#: htdocs/luci-static/resources/view/ledset.js:60
+#: htdocs/luci-static/resources/view/ledset.js:63
 msgid "Failed to apply the LED settings: %s"
 msgstr "应用 LED 设置失败：%s"
