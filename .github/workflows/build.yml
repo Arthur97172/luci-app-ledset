@@ -172,9 +172,6 @@ jobs:
           tag_name: ${{ steps.version.outputs.PKGVER }}
           name: ${{ steps.version.outputs.PKGVER }}
           body: |
-            自动编译的 LuCI 插件包，版本 ${{ steps.version.outputs.PKGVER }}（未签名）。
-            Auto-built, unsigned LuCI packages, version ${{ steps.version.outputs.PKGVER }}.
-
             **包含 / Contents**
             - `luci-app-ledset` — 主程序包 / main package
               内置简体中文与英文界面，无需单独安装语言包。
