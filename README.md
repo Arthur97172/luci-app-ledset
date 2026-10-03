@@ -40,7 +40,7 @@ for i in /sys/class/leds/*; do [ -e "$i/brightness" ] && echo 0 > "$i/brightness
 从 [Releases](../../releases) 页面下载对应的软件包，复制到路由器上并安装。
 
 软件包针对 OpenWrt 24.10（`.ipk`）与 25.12+（`.apk`）构建。Release 的 tag 与
-名称直接取自 Makefile 中的 `PKG_VERSION`/`PKG_RELEASE`（例如 `1.0.1-r1`），
+名称直接取自 Makefile 中的 `PKG_VERSION`/`PKG_RELEASE`（例如 `1.0.2-r1`），
 所以下载到的版本号一定与 tag 一致。
 
 **简体中文与英文界面都已包含在这一个包里**，不需要再安装任何语言包。

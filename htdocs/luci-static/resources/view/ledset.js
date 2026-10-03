@@ -46,8 +46,24 @@ return view.extend({
 			/*
 			 * Commit the staged UCI change first, so that the init script
 			 * restarted below already reads the new "enable" value.
+			 *
+			 * uci.apply() is the raw ubus RPC rather than the HTTP endpoint
+			 * the stock footer posts to, and it answers UBUS_STATUS_NO_DATA
+			 * when there is nothing staged to commit - which is exactly the
+			 * case when Save & Apply is pressed without touching the switch.
+			 * The call is declared reject: true, so that status arrives as a
+			 * rejected promise and would be reported below as a bogus failure
+			 * of an operation that was really a no-op. Ask uci.changes() for
+			 * the staged changeset and commit only when it is non-empty.
 			 */
-			return uci.apply();
+			return uci.changes();
+		}).then(function(changes) {
+			var pending = 0;
+
+			for (var config in changes)
+				pending += changes[config].length;
+
+			return pending ? uci.apply() : null;
 		}).then(function() {
 			return callRcInit('ledset', 'restart');
 		}).then(function() {

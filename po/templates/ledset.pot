@@ -21,6 +21,6 @@ msgstr ""
 msgid "Controls the status of LEDs. Settings take effect immediately and will persist after a reboot (ON or OFF)."
 msgstr ""
 
-#: htdocs/luci-static/resources/view/ledset.js:63
+#: htdocs/luci-static/resources/view/ledset.js:79
 msgid "Failed to apply the LED settings: %s"
 msgstr ""
